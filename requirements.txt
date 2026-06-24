@@ -1,0 +1,9 @@
+# Zero-dependency local server using standard Python libraries.
+# Python standard libraries used:
+# - sqlite3
+# - http.server
+# - json
+# - csv
+# - os
+# - random
+# - datetime

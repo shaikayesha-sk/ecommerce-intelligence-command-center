@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Intelligence Command Center</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">🚀</div>
+                <div class="brand-info">
+                    <h2>EC-COMMAND</h2>
+                    <span class="status-badge"><span class="pulse"></span>DB Live</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#executive" class="nav-item active" data-view="executive">
+                    <span class="icon">💰</span> Executive Summary
+                </a>
+                <a href="#customers" class="nav-item" data-view="customers">
+                    <span class="icon">👥</span> Customer Intelligence
+                </a>
+                <a href="#products" class="nav-item" data-view="products">
+                    <span class="icon">📦</span> Product Performance
+                </a>
+                <a href="#regional" class="nav-item" data-view="regional">
+                    <span class="icon">🌍</span> Regional Performance
+                </a>
+                <a href="#retention" class="nav-item" data-view="retention">
+                    <span class="icon">🔁</span> Retention & Cohort
+                </a>
+                <div class="nav-separator">DATA MANAGEMENT</div>
+                <a href="#dataquality" class="nav-item" data-view="dataquality">
+                    <span class="icon">📋</span> Data Quality Audit (QA)
+                </a>
+                <a href="#playground" class="nav-item" data-view="playground">
+                    <span class="icon">💻</span> SQL Sandbox IDE
+                </a>
+            </nav>
+
+            <div class="sidebar-footer"></div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Global Filters Bar -->
+            <header class="filter-bar">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="filter-start-date">Start Date</label>
+                        <input type="date" id="filter-start-date" value="2024-01-01" min="2024-01-01" max="2025-12-31">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-end-date">End Date</label>
+                        <input type="date" id="filter-end-date" value="2025-12-31" min="2024-01-01" max="2025-12-31">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-region">Region</label>
+                        <select id="filter-region">
+                            <option value="All">All Regions</option>
+                            <option value="North America East">North America East</option>
+                            <option value="North America West">North America West</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Asia">Asia</option>
+                            <option value="Latin America">Latin America</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-category">Category</label>
+                        <select id="filter-category">
+                            <option value="All">All Categories</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Apparel">Apparel</option>
+                            <option value="Home & Kitchen">Home & Kitchen</option>
+                            <option value="Books">Books</option>
+                            <option value="Beauty">Beauty</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
+                    <button id="reset-filters-btn" class="btn-secondary">Reset</button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- ========================================== -->
+                <!-- VIEW: EXECUTIVE SUMMARY -->
+                <!-- ========================================== -->
+                <section id="view-executive" class="dashboard-view active">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-title">Total Revenue</div>
+                            <div class="kpi-value" id="kpi-revenue">$0.00</div>
+                            <div class="kpi-subtext">24-Month Aggregate Sales</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Total Net Profit</div>
+                            <div class="kpi-value" id="kpi-profit">$0.00</div>
+                            <div class="kpi-subtext">Net margin after product cost & shipping</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Gross Margin</div>
+                            <div class="kpi-value" id="kpi-margin">0.00%</div>
+                            <div class="kpi-subtext">Profit contribution index</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Total Orders</div>
+                            <div class="kpi-value" id="kpi-orders">0</div>
+                            <div class="kpi-subtext">Completed purchase volume</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">AOV / CLV Proxy</div>
+                            <div class="kpi-value" id="kpi-aov-clv">$0.00 / $0.00</div>
+                            <div class="kpi-subtext">Avg Order / Avg Customer Spend</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">Repeat Purchase Rate</div>
+                            <div class="kpi-value" id="kpi-rpr">0.00%</div>
+                            <div class="kpi-subtext">Customers with >1 purchases</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-container large">
+                            <h3>💰 Revenue & Net Profit Trend (with 30-Day Rolling Forecast)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-exec-forecast"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decision Intelligence Panel -->
+                    <div class="decision-panel warning">
+                        <div class="decision-header">
+                            <span class="icon">💡</span>
+                            <h4>Decision Intelligence Overlay: Executive Growth Analysis</h4>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-block">
+                                <h5>⚠️ The Problem</h5>
+                                <p>Revenue shows continuous MoM growth, but overall net profitability is highly volatile and failing to scale proportionally.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🔍 Root Cause</h5>
+                                <p>Heavy promotional discounts (>35%) applied to top-selling electronics products and increased logistics delays on the West Coast are eroding margins.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>📈 Business Impact</h5>
+                                <p>A 22% reduction in cash flow reserves due to operating margins compressing from 48% down to 29% on promotional product units.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🛠️ Recommended Action</h5>
+                                <p>Introduce a global discount cap of 35% on Electronics categories and shift marketing budget to higher-margin Beauty and Apparel products.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: CUSTOMER INTELLIGENCE -->
+                <!-- ========================================== -->
+                <section id="view-customers" class="dashboard-view">
+                    <div class="grid-row-50-50">
+                        <div class="chart-container">
+                            <h3>📊 Precomputed RFM Customer Segmentation</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-rfm-distribution"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>👑 Top 10% High-Value Customers (Monetary Leaderboard)</h3>
+                            <div class="table-wrapper">
+                                <table id="table-top-customers">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Region</th>
+                                            <th>Total Spend</th>
+                                            <th>Orders</th>
+                                            <th>Segment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic JS injection -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-panel info">
+                        <div class="decision-header">
+                            <span class="icon">💡</span>
+                            <h4>Decision Intelligence Overlay: RFM Retention Strategy</h4>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-block">
+                                <h5>⚠️ The Problem</h5>
+                                <p>"Lost Customers" (22.4%) and "At-Risk Customers" (17.8%) make up nearly 40% of the active database, indicating high churn after acquisition.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🔍 Root Cause</h5>
+                                <p>Lack of post-purchase engagement workflows and late delivery delays leading to lower repeat purchase probability.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>📈 Business Impact</h5>
+                                <p>High Customer Acquisition Cost (CAC) is not being amortized. One-time buyers generate average order values 30% below loyal segments.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🛠️ Recommended Action</h5>
+                                <p>Automate an email sequence offering a 20% discount coupon to "At-Risk Customers" at Day 45 post-purchase. Offer "Champions" exclusive early access to product launches.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: PRODUCT PERFORMANCE -->
+                <!-- ========================================== -->
+                <section id="view-products" class="dashboard-view">
+                    <div class="grid-row-50-50">
+                        <div class="chart-container">
+                            <h3>🎯 Product Margin Matrix (Revenue vs Profit Quadrants)</h3>
+                            <div class="matrix-legend">
+                                <span class="legend-tag star">Top-Right: Stars (High Rev, High Profit)</span>
+                                <span class="legend-tag leak">Top-Left: Profit Leaks (High Rev, Low/Negative Profit)</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-product-matrix"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>📉 Discount Sensitivity & Impact Analysis</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-discount-sensitivity"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>📦 Product Financial Contribution Table (Sorted by Profit)</h3>
+                        <div class="table-wrapper">
+                            <table id="table-products-contribution">
+                                <thead>
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Units Sold</th>
+                                        <th>Revenue</th>
+                                        <th>Profit Margin %</th>
+                                        <th>Net Profit</th>
+                                        <th>Avg Discount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic JS injection -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="decision-panel danger">
+                        <div class="decision-header">
+                            <span class="icon">💡</span>
+                            <h4>Decision Intelligence Overlay: Profit Leak Mitigation</h4>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-block">
+                                <h5>⚠️ The Problem</h5>
+                                <p>High-volume products ("GigaCharge Wireless Charger" and "NeoSound Earbuds") are showing net losses (Profit Leakage) despite representing 32% of units sold.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🔍 Root Cause</h5>
+                                <p>Average discounts on these products exceed 42% because of automated markdown codes. Price margins cannot support cost + shipping.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>📈 Business Impact</h5>
+                                <p>Company loses $6.20 on every "GigaCharge Wireless Charger" order, washing out profits generated from the "BaristaPro Espresso Maker".</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🛠️ Recommended Action</h5>
+                                <p>Instantly replace flat 40%+ discounts with multi-item bundles (e.g. "Buy a Phone Cover, Get 15% off Charger"). Revise shipping policy to charge shipping on discounted items.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: REGIONAL PERFORMANCE -->
+                <!-- ========================================== -->
+                <section id="view-regional" class="dashboard-view">
+                    <div class="grid-row-50-50">
+                        <div class="chart-container">
+                            <h3>🌍 Logistics Impact: Shipping Delays vs. Sales Performance</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-shipping-delays-sales"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>📈 Regional Revenue Growth & Growth Index</h3>
+                            <div class="table-wrapper">
+                                <table id="table-regional-performance">
+                                    <thead>
+                                        <tr>
+                                            <th>Region</th>
+                                            <th>Total Revenue</th>
+                                            <th>Total Profit</th>
+                                            <th>Net Profit Margin</th>
+                                            <th>Orders</th>
+                                            <th>Avg Delivery (Days)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic JS injection -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-panel warning">
+                        <div class="decision-header">
+                            <span class="icon">💡</span>
+                            <h4>Decision Intelligence Overlay: Regional Delivery & Drop-off Correlation</h4>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-block">
+                                <h5>⚠️ The Problem</h5>
+                                <p>"North America West" sales declined by 48% from July to December 2025, while acquisition sign-ups remained flat.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🔍 Root Cause</h5>
+                                <p>Fulfillment delays caused shipping times in North America West to surge from 3.2 days to 11.8 days starting July 2025.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>📈 Business Impact</h5>
+                                <p>Loss of approximately $18,400 in potential repeat-order revenue. Churn rate of repeat buyers in the region increased by 65%.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🛠️ Recommended Action</h5>
+                                <p>Transition logistics from current West Coast carrier to a localized multi-warehouse solution. Compensate delayed customers with $10 credits to prevent churn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: RETENTION & COHORT -->
+                <!-- ========================================== -->
+                <section id="view-retention" class="dashboard-view">
+                    <div class="chart-container">
+                        <h3>🔁 Precomputed Customer Cohort Retention Heatmap (% Retained MoM)</h3>
+                        <div class="cohort-heatmap-container">
+                            <table id="table-cohort-retention" class="cohort-table">
+                                <!-- Dynamically populated by app.js -->
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid-row-50-50">
+                        <div class="chart-container">
+                            <h3>📉 Average Cohort Retention Curve (Survival Rate)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-retention-curve"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>🚨 High Churn Risk Predictor Table</h3>
+                            <div class="table-wrapper">
+                                <table id="table-churn-prediction">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Region</th>
+                                            <th>Days Since Last Order</th>
+                                            <th>Avg Order Cycle</th>
+                                            <th>Risk Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic JS injection -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="decision-panel info">
+                        <div class="decision-header">
+                            <span class="icon">💡</span>
+                            <h4>Decision Intelligence Overlay: Cohort Decay & Retention Uplift</h4>
+                        </div>
+                        <div class="decision-grid">
+                            <div class="decision-block">
+                                <h5>⚠️ The Problem</h5>
+                                <p>A sharp retention drop-off occurs in Month 1 (from 100% down to 18-22% across all monthly cohorts), leading to a flat long-term curve.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🔍 Root Cause</h5>
+                                <p>A lack of immediate post-purchase onboarding or contextual email offers, leaving customers with no immediate incentive to return.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>📈 Business Impact</h5>
+                                <p>Acquiring customers is not generating long-term equity. The LTV/CAC ratio is currently low (1.4x), whereas healthy models operate at >3x.</p>
+                            </div>
+                            <div class="decision-block">
+                                <h5>🛠️ Recommended Action</h5>
+                                <p>Deploy a "First-Purchase Thank You" automation offering custom accessory suggestions for the purchased product. Establish a VIP membership tier with free shipping on all orders over $25.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: DATA QUALITY AUDIT -->
+                <!-- ========================================== -->
+                <section id="view-dataquality" class="dashboard-view">
+                    <div class="grid-row-50-50">
+                        <div class="kpi-card large">
+                            <div class="kpi-title">Data Quality Health Score</div>
+                            <div class="kpi-value-large" id="qa-health-score">0.0%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="qa-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p class="qa-subtitle">Checks run: Null constraint, duplication, price validation, discount boundary, foreign key orphan checks.</p>
+                        </div>
+                        <div class="chart-container">
+                            <h3>📋 Data Audit Issue Summary (Excel Simulation)</h3>
+                            <ul class="qa-issues-list" id="qa-issues-list">
+                                <!-- Dynamic audit logs -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>🔬 Comparative QA Ledger: Anomaly Identification vs. Cleanup Rules</h3>
+                        <div class="table-wrapper">
+                            <table class="qa-comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data Field</th>
+                                        <th>Detected Anomaly</th>
+                                        <th>System Impact</th>
+                                        <th>Automated Cleanup Resolution</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Customer Email</strong></td>
+                                        <td>Null or empty strings detected (e.g. 2 customers)</td>
+                                        <td>Breaks marketing lists, cannot authenticate user</td>
+                                        <td><span class="badge-resolved">Dropped</span> Removed rows without contact identifiers</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Customer Region</strong></td>
+                                        <td>Missing region values</td>
+                                        <td>Fails geography reports, aggregates to blanks</td>
+                                        <td><span class="badge-resolved">Imputed</span> Defaulted missing cells to "Unknown"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Product Price</strong></td>
+                                        <td>Negative or zero prices (e.g. price = -19.99, cost = 10)</td>
+                                        <td>Distorts total revenue, creates negative transaction items</td>
+                                        <td><span class="badge-resolved">Purged</span> Excluded products with price <= 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Order Items</strong></td>
+                                        <td>Duplicate order items (identical order_id & product_id)</td>
+                                        <td>Inflates sales counts, double-counts margins</td>
+                                        <td><span class="badge-resolved">Deduplicated</span> Removed duplicate keys, keeping first instance</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Discounts</strong></td>
+                                        <td>Discounts >70% (e.g. 125% discount) or negative discount</td>
+                                        <td>Negative pricing calculations, pricing logic failure</td>
+                                        <td><span class="badge-resolved">Bounded</span> Capped discounts to 70%, negative discounts set to 0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Order Orphan Check</strong></td>
+                                        <td>Order customer_id not present in Customers table</td>
+                                        <td>Breaks database integrity, invalidates cohort/RFM views</td>
+                                        <td><span class="badge-resolved">Purged</span> Deleted orders with invalid customer foreign keys</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- VIEW: SQL PLAYGROUND -->
+                <!-- ========================================== -->
+                <section id="view-playground" class="dashboard-view">
+                    <div class="playground-container">
+                        <!-- Left sidebar schema browser -->
+                        <aside class="schema-browser">
+                            <h4>🗄️ Database Schema</h4>
+                            <div class="schema-list" id="schema-list">
+                                <div class="schema-table-item">
+                                    <div class="table-name">📁 customers</div>
+                                    <ul class="column-list">
+                                        <li>customer_id <span class="type">INTEGER (PK)</span></li>
+                                        <li>name <span class="type">TEXT</span></li>
+                                        <li>email <span class="type">TEXT</span></li>
+                                        <li>region <span class="type">TEXT</span></li>
+                                        <li>signup_date <span class="type">TEXT</span></li>
+                                    </ul>
+                                </div>
+                                <div class="schema-table-item">
+                                    <div class="table-name">📁 products</div>
+                                    <ul class="column-list">
+                                        <li>product_id <span class="type">INTEGER (PK)</span></li>
+                                        <li>name <span class="type">TEXT</span></li>
+                                        <li>category <span class="type">TEXT</span></li>
+                                        <li>price <span class="type">REAL</span></li>
+                                        <li>cost <span class="type">REAL</span></li>
+                                    </ul>
+                                </div>
+                                <div class="schema-table-item">
+                                    <div class="table-name">📁 orders</div>
+                                    <ul class="column-list">
+                                        <li>order_id <span class="type">INTEGER (PK)</span></li>
+                                        <li>customer_id <span class="type">INTEGER (FK)</span></li>
+                                        <li>order_date <span class="type">TEXT</span></li>
+                                        <li>shipping_date <span class="type">TEXT</span></li>
+                                        <li>status <span class="type">TEXT</span></li>
+                                    </ul>
+                                </div>
+                                <div class="schema-table-item">
+                                    <div class="table-name">📁 order_items</div>
+                                    <ul class="column-list">
+                                        <li>item_id <span class="type">INTEGER (PK)</span></li>
+                                        <li>order_id <span class="type">INTEGER (FK)</span></li>
+                                        <li>product_id <span class="type">INTEGER (FK)</span></li>
+                                        <li>quantity <span class="type">INTEGER</span></li>
+                                        <li>price <span class="type">REAL</span></li>
+                                        <li>discount <span class="type">REAL</span></li>
+                                        <li>shipping_cost <span class="type">REAL</span></li>
+                                    </ul>
+                                </div>
+                                <div class="schema-table-item view">
+                                    <div class="table-name">📊 view_customer_rfm</div>
+                                </div>
+                                <div class="schema-table-item view">
+                                    <div class="table-name">📊 view_cohort_retention</div>
+                                </div>
+                                <div class="schema-table-item view">
+                                    <div class="table-name">📊 view_churn_prediction</div>
+                                </div>
+                                <div class="schema-table-item view">
+                                    <div class="table-name">📊 view_sales_forecast</div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Right query work area -->
+                        <div class="query-area">
+                            <div class="query-header">
+                                <div class="template-selector-group">
+                                    <label for="query-template">Templates:</label>
+                                    <select id="query-template">
+                                        <option value="custom">-- Custom Query --</option>
+                                        <option value="kpis">1. Executive KPIs</option>
+                                        <option value="rfm">2. RFM Customer Segments</option>
+                                        <option value="leaks">3. Product Profit Leaks</option>
+                                        <option value="regions">4. Regional Shipping Delays</option>
+                                        <option value="cohorts">5. Cohort Retention Matrix</option>
+                                        <option value="churn">6. Churn Prediction List</option>
+                                    </select>
+                                </div>
+                                <button id="btn-run-query" class="btn-primary">⚡ Execute Query</button>
+                            </div>
+                            
+                            <div class="editor-wrapper">
+                                <textarea id="sql-editor" spellcheck="false">SELECT * FROM customers LIMIT 10;</textarea>
+                            </div>
+
+                            <div class="query-result-meta" id="result-meta">
+                                Query output will appear below.
+                            </div>
+
+                            <div class="query-error-panel" id="query-error" style="display: none;">
+                                <strong>⚠️ SQL Error:</strong> <span class="error-msg"></span>
+                            </div>
+
+                            <div class="query-results-table-container">
+                                <table id="playground-results-table">
+                                    <thead>
+                                        <!-- Dynamic header columns -->
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Main JS logic -->
+    <script src="app.js"></script>
+</body>
+</html>
